@@ -1,15 +1,22 @@
-const mongoose = require('mongoose');
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
 
-async function main(){
-
-    try{
-        mongoose.set("strictQuery", true);
-        await mongoose.connect('mongodb+srv://brenozaffa01:QYpLfktpxnmciOeW@cluster0.fnahhhs.mongodb.net/?retryWrites=true&w=majority');
-        console.log("Connection to DB successful");
-    } catch(err){
-        console.log("Connection to DB failed");
-    }
-
+export async function openDb () {
+    return open({
+        filename: './database.db',
+        driver: sqlite3.Database
+    })
 }
 
-module.exports = main;
+export async function createDataBase(){
+    openDb().then(db => {
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                password VARCHAR(32) NOT NULL
+            )
+        `);
+    });
+}

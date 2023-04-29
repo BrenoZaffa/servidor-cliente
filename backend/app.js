@@ -1,19 +1,25 @@
-const express = require('express');
-const cors = require('cors');
+import {createDataBase} from './db/conn.js'
+import express from 'express';
+import cors from 'cors';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const conn = require('./db/conn');
+createDataBase();
 
-conn();
+import {
+    insertUser
+} from './models/users.js'
+app.post("/users", function(req, res){
+    insertUser(req.body).then(() => {
+        res.status(201).send(req.body);
+    }).catch((err) => {
+        res.status(500).send({err, msg: "Erro ao inserir usuário"});
+    });
+});
 
-const routes = require('./routes/router');
-
-app.use('/api', routes);
-
-app.listen(3000, () => {});
-
-//
+app.listen(3000, function(){
+    console.log('Server started on port 3000');
+});
