@@ -1,6 +1,9 @@
 import {createDataBase} from './db/conn.js'
 import express from 'express';
 import cors from 'cors';
+import {
+    insertUser
+} from './models/users.js'
 
 const app = express();
 
@@ -9,9 +12,6 @@ app.use(express.json());
 
 createDataBase();
 
-import {
-    insertUser
-} from './models/users.js'
 app.post("/users", function(req, res){
     insertUser(req.body).then(() => {
         res.status(201).send(req.body);

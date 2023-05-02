@@ -2,10 +2,28 @@
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
 
-    let user = {
+    let userLogin = {
         email: '',
         password: '',
-        username: '',
+    }
+
+    let userCadastro = {
+        email: '',
+        password: '',
+        nome: '',
+    }
+
+    const realizarCadastro = async () => {
+        userCadastro.password = btoa(userCadastro.password);
+        const response = await fetch('http://localhost:3000/users', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userCadastro)
+        });
+        const data = await response.json();
+        console.log(data);
     }
 
     onMount(async () => {
@@ -29,13 +47,13 @@
         <div class="row mt-3">
             <div class="col-12">
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={user.email}>
+                    <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={userLogin.email}>
                     <label for="email-input">Email</label>
                 </div>
             </div>
             <div class="col-12">
                 <div class="form-floating">
-                    <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={user.password}>
+                    <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={userLogin.password}>
                     <label for="password-input">Senha</label>
                 </div>
             </div>
@@ -49,24 +67,24 @@
         </div>
         <div class="col-12 mt-3">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control form-control-sm" id="username-input" placeholder="name@example.com" bind:value={user.username}>
-                <label for="username-input">Username</label>
+                <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="name@example.com" bind:value={userCadastro.nome}>
+                <label for="nome-input">nome</label>
             </div>
         </div>
         <div class="col-12">
             <div class="form-floating mb-3">
-                <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={user.email}>
+                <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={userCadastro.email}>
                 <label for="email-input">Email</label>
             </div>
         </div>
         <div class="col-12">
             <div class="form-floating">
-                <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={user.password}>
+                <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={userCadastro.password}>
                 <label for="password-input">Senha</label>
             </div>
         </div>
         <div class="col-12 mt-3 d-grid">
-            <button type="button" class="btn btn btn-info btn-block"><i class="far fa-plus-square"></i> Cadastrar</button>
+            <button on:click={() => realizarCadastro()} type="button" class="btn btn btn-info btn-block"><i class="far fa-plus-square"></i> Cadastrar</button>
         </div>
     </div>
 </div>
