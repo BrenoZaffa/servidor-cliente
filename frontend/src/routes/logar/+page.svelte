@@ -15,7 +15,7 @@
 
     const realizarCadastro = async () => {
         userCadastro.password = btoa(userCadastro.password);
-        const response = await fetch('http://localhost:3000/users', {
+        const response = await fetch('http://localhost:25000/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,13 +47,13 @@
         <div class="row mt-3">
             <div class="col-12">
                 <div class="form-floating mb-3">
-                    <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={userLogin.email}>
+                    <input type="email" class="form-control form-control-sm" id="email-input-cadastro" placeholder="name@example.com" bind:value={userLogin.email}>
                     <label for="email-input">Email</label>
                 </div>
             </div>
             <div class="col-12">
                 <div class="form-floating">
-                    <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={userLogin.password}>
+                    <input type="password" class="form-control form-control-sm" id="password-input-cadastro" placeholder="Password" bind:value={userLogin.password}>
                     <label for="password-input">Senha</label>
                 </div>
             </div>
