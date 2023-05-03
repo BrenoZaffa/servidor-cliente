@@ -1,29 +1,25 @@
 <script>
     import { goto } from '$app/navigation';
+    import md5 from 'md5';
     import { onMount } from 'svelte';
 
-    let userLogin = {
-        email: '',
-        password: '',
-    }
 
-    let userCadastro = {
-        email: '',
-        password: '',
-        nome: '',
-    }
+    let userLogin = {}
+    let userCadastro = {}
 
     const realizarCadastro = async () => {
-        userCadastro.password = btoa(userCadastro.password);
+        var post = userCadastro
+
+        if(post.password)
+            post.password = md5(post.password)
         const response = await fetch('http://localhost:25000/users', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(userCadastro)
+            body: JSON.stringify(post)
         });
-        const data = await response.json();
-        console.log(data);
+        return await response.json();
     }
 
     onMount(async () => {
@@ -67,8 +63,8 @@
         </div>
         <div class="col-12 mt-3">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="name@example.com" bind:value={userCadastro.nome}>
-                <label for="nome-input">nome</label>
+                <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={userCadastro.nome}>
+                <label for="nome-input">Nome</label>
             </div>
         </div>
         <div class="col-12">
