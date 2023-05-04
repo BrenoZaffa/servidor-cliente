@@ -7,11 +7,15 @@
     let userLogin = {}
     let userCadastro = {}
 
+    let erroCadastro = false;
+
     const realizarCadastro = async () => {
         var post = userCadastro
 
-        if(post.password)
-            post.password = md5(post.password)
+        if(await validaForm(post))
+            return;
+        
+        if(post.password) post.password = md5(post.password)
         const response = await fetch('http://localhost:25000/users', {
             method: 'POST',
             headers: {
@@ -20,6 +24,15 @@
             body: JSON.stringify(post)
         });
         return await response.json();
+    }
+
+    const validaForm = async (post) => {
+        erroCadastro = false;
+
+        if(!post.nome || (post.nome && post.nome.length < 2))
+            erroCadastro = true;
+
+        return erroCadastro;
     }
 
     onMount(async () => {
@@ -37,7 +50,7 @@
     <div class="box">
         <div class="row">
             <div class="col-12">
-                <h3><b>Login</b></h3>
+                <h3 class="text-white"><b>Login</b></h3>
             </div>
         </div>
         <div class="row mt-3">
@@ -59,12 +72,16 @@
         </div>
         <hr>
         <div class="col-12">
-            <h3><b>Cadastro</b></h3>
+            <h3 class="text-white"><b>Cadastro</b></h3>
         </div>
         <div class="col-12 mt-3">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={userCadastro.nome}>
                 <label for="nome-input">Nome</label>
+                {#if erroCadastro}
+                    {#if !userCadastro.nome}<p class="error-input mt-1 p-1">Nome é obrigatório</p>{/if}
+                    {#if userCadastro.nome && userCadastro.nome.length < 2}<p class="error-input mt-1 p-1">Nome deve ter no mínimo 2 caracteres</p>{/if}
+                {/if}
             </div>
         </div>
         <div class="col-12">
@@ -80,16 +97,22 @@
             </div>
         </div>
         <div class="col-12 mt-3 d-grid">
-            <button on:click={() => realizarCadastro()} type="button" class="btn btn btn-info btn-block"><i class="far fa-plus-square"></i> Cadastrar</button>
+            <button on:click={() => realizarCadastro()} type="button" class="btn btn btn-success btn-block"><i class="far fa-plus-square"></i> Cadastrar</button>
         </div>
     </div>
 </div>
 
 <style>
+    .error-input {
+        color: #ffda6a;
+        background-color: #332701;
+        border-radius: 5px;
+        border: #997404 2px solid;
+    }
     .cont {
         width: 100vw;
         height: 100vh;
-        background: linear-gradient(120deg, #38639A 0%, #B4D5FF 100%);
+        background: #193549;
         display: flex;
         flex-direction: row;
         justify-content: center;
@@ -98,7 +121,7 @@
     .box {
         padding: 20px;
         width: 500px;
-        background: #fff;
+        background: #2f384a;
         border-radius: 5px;
         border: 1px solid rgb(163, 163, 163);
         box-shadow: 0 0 10px rgba(0,0,0,0.5);
