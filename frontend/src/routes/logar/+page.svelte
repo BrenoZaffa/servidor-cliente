@@ -2,7 +2,7 @@
     import { goto } from '$app/navigation';
     import md5 from 'md5';
     import { onMount } from 'svelte';
-
+    import { cadastarUser } from '../../services/user';
 
     let userLogin = {}
     let userCadastro = {}
@@ -16,20 +16,17 @@
             return;
         
         if(post.password) post.password = md5(post.password)
-        const response = await fetch('http://localhost:25000/users', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(post)
-        });
-        return await response.json();
+        
+        var res = await cadastarUser(post)
     }
 
     const validaForm = async (post) => {
         erroCadastro = false;
 
-        if(!post.nome || (post.nome && post.nome.length < 2))
+        if(!post.name || (post.name && post.name.length < 2))
+            erroCadastro = true;
+
+        if(userCadastro.email && (userCadastro.email.split("@").length != 2 || (userCadastro.email.split("@")?.[1] == "" || userCadastro.email.split("@")?.[0] == "")))
             erroCadastro = true;
 
         return erroCadastro;
@@ -76,11 +73,11 @@
         </div>
         <div class="col-12 mt-3">
             <div class="form-floating mb-3">
-                <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={userCadastro.nome}>
+                <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={userCadastro.name}>
                 <label for="nome-input">Nome</label>
                 {#if erroCadastro}
-                    {#if !userCadastro.nome}<p class="error-input mt-1 p-1">Nome é obrigatório</p>{/if}
-                    {#if userCadastro.nome && userCadastro.nome.length < 2}<p class="error-input mt-1 p-1">Nome deve ter no mínimo 2 caracteres</p>{/if}
+                    {#if !userCadastro.name}<p class="error-input mt-1 p-1">Nome é obrigatório!</p>{/if}
+                    {#if userCadastro.name && userCadastro.name.length < 2}<p class="error-input mt-1 p-1">Nome deve ter no mínimo 2 caracteres!</p>{/if}
                 {/if}
             </div>
         </div>
@@ -88,6 +85,12 @@
             <div class="form-floating mb-3">
                 <input type="email" class="form-control form-control-sm" id="email-input" placeholder="name@example.com" bind:value={userCadastro.email}>
                 <label for="email-input">Email</label>
+                {#if erroCadastro}
+                    {#if !userCadastro.email}<p class="error-input mt-1 p-1">Email é obrigatório!</p>{/if}
+                    {#if userCadastro.email && (userCadastro.email.split("@").length != 2 || (userCadastro.email.split("@")?.[1] == "" || userCadastro.email.split("@")?.[0] == ""))}
+                        <p class="error-input mt-1 p-1">Informe um email válido!</p>
+                    {/if}
+                {/if}
             </div>
         </div>
         <div class="col-12">
