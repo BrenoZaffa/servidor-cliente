@@ -12,21 +12,27 @@
     const realizarCadastro = async () => {
         var post = userCadastro
 
-        if(await validaForm(post))
+        if(await validaForm())
             return;
         
         if(post.password) post.password = md5(post.password)
         
         var res = await cadastarUser(post)
+        if(res.status == 201){
+
+        }
     }
 
-    const validaForm = async (post) => {
+    const validaForm = async () => {
         erroCadastro = false;
 
-        if(!post.name || (post.name && post.name.length < 2))
+        if(!userCadastro.name || (userCadastro.name && (userCadastro.name.length < 2 || userCadastro.name.length > 125)))
             erroCadastro = true;
 
-        if(userCadastro.email && (userCadastro.email.split("@").length != 2 || (userCadastro.email.split("@")?.[1] == "" || userCadastro.email.split("@")?.[0] == "")))
+        if(!userCadastro.email || (userCadastro.email && (userCadastro.email.split("@").length != 2 || (userCadastro.email.split("@")?.[1] == "" || userCadastro.email.split("@")?.[0] == "") || userCadastro.email.length < 10 || userCadastro.email.length > 125)))
+            erroCadastro = true;
+
+        if(!userCadastro.password || (userCadastro.password && (userCadastro.password.length < 2 || userCadastro.password.length > 125)))
             erroCadastro = true;
 
         return erroCadastro;
@@ -40,7 +46,7 @@
 
 <svelte:head>
     <link rel="shortcut icon" href="/geo-alt.svg" >
-    <title>Acidentes - Login</title> 
+    <title>SAOITR - Login</title> 
 </svelte:head>
 
 <div class="cont">
@@ -77,7 +83,7 @@
                 <label for="nome-input">Nome</label>
                 {#if erroCadastro}
                     {#if !userCadastro.name}<p class="error-input mt-1 p-1">Nome é obrigatório!</p>{/if}
-                    {#if userCadastro.name && userCadastro.name.length < 2}<p class="error-input mt-1 p-1">Nome deve ter no mínimo 2 caracteres!</p>{/if}
+                    {#if userCadastro.name && (userCadastro.name.length < 2 || userCadastro.name.length > 125)}<p class="error-input mt-1 p-1">Nome deve ter entre 2 e 125 caracteres!</p>{/if}
                 {/if}
             </div>
         </div>
@@ -90,6 +96,9 @@
                     {#if userCadastro.email && (userCadastro.email.split("@").length != 2 || (userCadastro.email.split("@")?.[1] == "" || userCadastro.email.split("@")?.[0] == ""))}
                         <p class="error-input mt-1 p-1">Informe um email válido!</p>
                     {/if}
+                    {#if userCadastro.email && (userCadastro.email.length < 10 || userCadastro.email.length > 125)}
+                        <p class="error-input mt-1 p-1">Email deve ter entre 10 e 125 caracteres!</p>
+                    {/if}
                 {/if}
             </div>
         </div>
@@ -97,6 +106,10 @@
             <div class="form-floating">
                 <input type="password" class="form-control form-control-sm" id="password-input" placeholder="Password" bind:value={userCadastro.password}>
                 <label for="password-input">Senha</label>
+                {#if erroCadastro}
+                    {#if !userCadastro.password}<p class="error-input mt-1 p-1">Senha é obrigatório!</p>{/if}
+                    {#if userCadastro.password && (userCadastro.password.length < 2 || userCadastro.password.length > 125)}<p class="error-input mt-1 p-1">Senha deve ter entre 2 e 125 caracteres!</p>{/if}
+                {/if}
             </div>
         </div>
         <div class="col-12 mt-3 d-grid">

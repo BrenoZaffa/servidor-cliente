@@ -29,12 +29,12 @@
 
 <svelte:head>
     <link rel="shortcut icon" href="/geo-alt.svg" >
-    <title>Acidentes</title> 
+    <title>SAOITR - Ocorrências</title> 
 </svelte:head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-dark mb-3">
     <div class="container">
-        <a class="navbar-brand mx-auto" href="/">Ocorrências</a>
+        <a class="navbar-brand mx-auto" href="/">SAOITR</a>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link" href="/logar">Logar / Registrar</a>
@@ -46,7 +46,7 @@
 <div class="row m-3">
     <div class="col-12">
         <h2>
-            <b>Publicações</b>
+            <b>Ocorrências</b>
         </h2>
     </div>
     {#each publicacoes as publi}

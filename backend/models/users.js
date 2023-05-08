@@ -1,9 +1,27 @@
 import { openDb } from '../db/conn.js';
 const db = await openDb();
 
-export async function insertUser(user) {
-    return db.exec(`
-        INSERT INTO users (nome, email, password)
-        VALUES ('${user.nome}', '${user.email}', '${user.password}')
-    `);
+export const usersModel = {
+
+    insertUser: async (user) => {
+        db.exec(`
+            INSERT INTO users (name, email, password)
+            VALUES ('${user.name}', '${user.email}', '${user.password}')
+        `);
+        let user = db.get(`SELECT * FROM users WHERE email = '${user.email}'`);
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        };
+    },
+
+    findUserByEmail: async (email) => {
+        return db.get(`
+            SELECT * FROM users WHERE email = '${email}'
+        `);
+    }
+    
 }
+
+module.exports = usersModel;
