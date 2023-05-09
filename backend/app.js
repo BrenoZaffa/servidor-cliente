@@ -29,8 +29,11 @@ app.post("/users", async function(req, res){
         if(!data.password || (data.password && (data.password.length < 2 || data.password.length > 125)))
             dataCorrect = false;
 
-        if(!dataCorrect)
+        if(!dataCorrect){
+            console.log("Data incorrect");
             res.status(400).send({message: "As credenciais informadas não correspondem ao modelo correto da requisição. Por favor verifique os dados informados e tente novamente."});
+            return;
+        }
 
         var existeEmail = await usersModel.findUserByEmail(data.email);
         if(existeEmail){

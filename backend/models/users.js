@@ -8,20 +8,17 @@ export const usersModel = {
             INSERT INTO users (name, email, password)
             VALUES ('${user.name}', '${user.email}', '${user.password}')
         `);
-        let user = db.get(`SELECT * FROM users WHERE email = '${user.email}'`);
+        let userBanco = await db.get(`SELECT * FROM users WHERE email = '${user.email}'`);
         return {
-            id: user.id,
-            name: user.name,
-            email: user.email
+            id: userBanco.id,
+            name: userBanco.name,
+            email: userBanco.email
         };
     },
 
     findUserByEmail: async (email) => {
-        return db.get(`
+        return await db.get(`
             SELECT * FROM users WHERE email = '${email}'
         `);
     }
-    
-}
-
-module.exports = usersModel;
+};

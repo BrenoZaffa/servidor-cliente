@@ -1,29 +1,38 @@
 <script>
     import { goto } from '$app/navigation';
     import md5 from 'md5';
-    import { onMount } from 'svelte';
-    import { cadastarUser } from '../../services/user';
+    import { cadastarUser, logarUser } from '../../services/user';
 
     let userLogin = {}
     let userCadastro = {}
 
     let erroCadastro = false;
 
+    const logar = async () => {
+        var post = userLogin
+        
+        if(post.password) post.password = md5(post.password)
+        
+        var res = await logarUser(post)
+        if(res.status == 200){
+            localStorage.setItem("token", res.data.token)
+            goto("/home")
+        }
+    }
+
     const realizarCadastro = async () => {
         var post = userCadastro
 
-        if(await validaForm())
+        if(await validaFormCadastro())
             return;
         
         if(post.password) post.password = md5(post.password)
         
         var res = await cadastarUser(post)
-        if(res.status == 201){
-
-        }
+        
     }
 
-    const validaForm = async () => {
+    const validaFormCadastro = async () => {
         erroCadastro = false;
 
         if(!userCadastro.name || (userCadastro.name && (userCadastro.name.length < 2 || userCadastro.name.length > 125)))
@@ -37,10 +46,6 @@
 
         return erroCadastro;
     }
-
-    onMount(async () => {
-        
-    });
     
 </script>
 
@@ -70,7 +75,7 @@
                 </div>
             </div>
             <div class="col-12 mt-3 d-grid">
-                <button type="button" class="btn btn btn-success btn-block"><i class="far fa-plus-square"></i> Logar</button>
+                <button on:click={() => logar()} type="button" class="btn btn btn-success btn-block"><i class="far fa-plus-square"></i> Logar</button>
             </div>
         </div>
         <hr>
