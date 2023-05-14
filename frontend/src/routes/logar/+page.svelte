@@ -9,11 +9,12 @@
     let erroCadastro = false;
 
     const logar = async () => {
-        var post = userLogin
+        let post = userLogin
         
-        if(post.password) post.password = md5(post.password)
+        if(post.password)
+            post.password = md5(post.password)
         
-        var res = await logarUser(post)
+        let res = await logarUser(post)
         if(res.status == 200){
             localStorage.setItem("token", res.data.token)
             goto("/home")
@@ -21,14 +22,15 @@
     }
 
     const realizarCadastro = async () => {
-        var post = userCadastro
+        let post = userCadastro
 
         if(await validaFormCadastro())
             return;
         
-        if(post.password) post.password = md5(post.password)
+        if(post.password)
+            post.password = md5(post.password)
         
-        var res = await cadastarUser(post)
+        let res = await cadastarUser(post)
         
     }
 
