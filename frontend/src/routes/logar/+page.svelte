@@ -206,7 +206,7 @@
         </div>
     </div>
     <div class="map">
-        <lottie-player src="/area-map.json"  background="transparent" speed="1"  style="width: 800px; height: 800px;" loop autoplay></lottie-player>
+        <lottie-player src="/area-map.json"  background="transparent" speed="1"  style="width: 90vw; height: 90vh;" loop autoplay></lottie-player>
     </div>
 </div>
 
@@ -228,16 +228,23 @@
     }
     .box {
         padding: 20px;
-        width: 600px;
+        width: 90vw;
         background: #2f384a;
         border-radius: 20px;
         box-shadow: 0 10px 40px #00000056;
-        margin-left: 300px;
+        margin-left: 10vw;
     }
     .map{
-        width: 800px;
-        height: 800px;
-        margin-right: 500px;
+        width: 50vw;
+        height: 100vh;
+        margin-right: 10vw;
+        display: flex;
+        align-items: center;
+    }
+    @media only screen and (max-width: 600px) {
+        .map{
+            display: none;
+        }
     }
     h3{
         text-align: center;
