@@ -2,27 +2,53 @@
     import { goto } from '$app/navigation';
     import md5 from 'md5';
     import { cadastarUser, logarUser } from '../../services/user';
-
+    import { scale } from 'svelte/transition';
+    import { onMount } from 'svelte';
+    
     let userLogin = {}
     let userCadastro = {}
 
     let erroCadastro = false;
+    let erroLogin = false;
+
+    let returnLogin
+    let returnCadastro
+
+    onMount(async () => {
+        if(sessionStorage.getItem("token"))
+            goto("/")
+    })
 
     const logar = async () => {
-        let post = userLogin
+        returnLogin = {}
+        let post = {...userLogin}
+
+        if(await validaFormLogin())
+            return;
         
         if(post.password)
             post.password = md5(post.password)
         
-        let res = await logarUser(post)
-        if(res.status == 200){
-            localStorage.setItem("token", res.data.token)
-            goto("/home")
+        returnLogin = await logarUser(post)
+        if(returnLogin.status == 200){
+
+            var userReturn = {
+                name: returnLogin?.data?.name,
+                email: returnLogin?.data?.email,
+                id: returnLogin?.data?.id
+            }
+            sessionStorage.setItem("user", JSON.stringify(userReturn))
+
+            sessionStorage.setItem("token", returnLogin?.data?.token)
+            setTimeout(() => {
+                goto("/")
+            }, 2000);
         }
     }
 
     const realizarCadastro = async () => {
-        let post = userCadastro
+        returnCadastro = null
+        let post = {...userCadastro}
 
         if(await validaFormCadastro())
             return;
@@ -30,8 +56,22 @@
         if(post.password)
             post.password = md5(post.password)
         
-        let res = await cadastarUser(post)
-        
+        returnCadastro = await cadastarUser(post)
+        if(returnCadastro.status == 201){
+            userCadastro = {}
+        }
+    }
+
+    const validaFormLogin = async () => {
+        erroLogin = false;
+
+        if(!userLogin.email || (userLogin.email && (userLogin.email.split("@").length != 2 || (userLogin.email.split("@")?.[1] == "" || userLogin.email.split("@")?.[0] == "") || userLogin.email.length < 10 || userLogin.email.length > 125)))
+            erroLogin = true;
+
+        if(!userLogin.password || (userLogin.password && (userLogin.password.length < 2 || userLogin.password.length > 125)))
+            erroLogin = true;
+
+        return erroLogin;
     }
 
     const validaFormCadastro = async () => {
@@ -56,34 +96,76 @@
     <title>SAOITR - Login</title> 
 </svelte:head>
 
+
 <div class="cont">
     <div class="box">
         <div class="row">
             <div class="col-12">
                 <h3 class="text-white"><b>Login</b></h3>
             </div>
+            {#if returnLogin?.status}
+                <div class="col-12 mt-3">
+                    <div in:scale={{duration: 500}} class="alert p-0 {returnLogin.status == 200 ? "alert-success" : "alert-danger"}" role="alert">
+                        <b class="msg-retorno">
+                            {#if returnLogin.status == 200}
+                                <lottie-player src="/like.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
+                            {:else}
+                                <lottie-player src="/warning.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
+                            {/if}
+                            {returnLogin?.data?.message ?? "Login realizado com sucesso!"}
+                        </b>
+                    </div>
+                </div>
+            {/if}
         </div>
         <div class="row mt-3">
             <div class="col-12">
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control form-control-sm" id="email-input-cadastro" placeholder="name@example.com" bind:value={userLogin.email}>
                     <label for="email-input">Email</label>
+                    {#if erroLogin}
+                        {#if !userLogin.email}<p class="error-input mt-1 p-1">Email é obrigatório!</p>{/if}
+                        {#if userLogin.email && (userLogin.email.split("@").length != 2 || (userLogin.email.split("@")?.[1] == "" || userLogin.email.split("@")?.[0] == ""))}
+                            <p class="error-input mt-1 p-1">Informe um email válido!</p>
+                        {/if}
+                        {#if userLogin.email && (userLogin.email.length < 10 || userLogin.email.length > 125)}
+                            <p class="error-input mt-1 p-1">Email deve ter entre 10 e 125 caracteres!</p>
+                        {/if}
+                    {/if}
                 </div>
             </div>
             <div class="col-12">
                 <div class="form-floating">
                     <input type="password" class="form-control form-control-sm" id="password-input-cadastro" placeholder="Password" bind:value={userLogin.password}>
                     <label for="password-input">Senha</label>
+                    {#if erroLogin}
+                        {#if !userLogin.password}<p class="error-input mt-1 p-1">Senha é obrigatório!</p>{/if}
+                        {#if userLogin.password && (userLogin.password.length < 2 || userLogin.password.length > 125)}<p class="error-input mt-1 p-1">Senha deve ter entre 2 e 125 caracteres!</p>{/if}
+                    {/if}
                 </div>
             </div>
             <div class="col-12 mt-3 d-grid">
-                <button on:click={() => logar()} type="button" class="btn btn btn-success btn-block"><i class="far fa-plus-square"></i> Logar</button>
+                <button on:click={() => logar()} type="button" class="btn btn btn-success btn-block">Logar</button>
             </div>
         </div>
         <hr>
         <div class="col-12">
             <h3 class="text-white"><b>Cadastro</b></h3>
         </div>
+        {#if returnCadastro?.status}
+            <div class="col-12 mt-3">
+                <div in:scale={{duration: 500}} class="alert p-0 {returnCadastro.status == 201 ? "alert-success" : "alert-danger"}" role="alert">
+                    <b class="msg-retorno">
+                        {#if returnCadastro.status == 201}
+                            <lottie-player src="/like.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
+                        {:else}
+                            <lottie-player src="/warning.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
+                        {/if}
+                        {returnCadastro?.data?.message ?? "Cadastro realizado com sucesso!"}
+                    </b>
+                </div>
+            </div>
+        {/if}
         <div class="col-12 mt-3">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={userCadastro.name}>
@@ -120,8 +202,11 @@
             </div>
         </div>
         <div class="col-12 mt-3 d-grid">
-            <button on:click={() => realizarCadastro()} type="button" class="btn btn btn-success btn-block"><i class="far fa-plus-square"></i> Cadastrar</button>
+            <button on:click={() => realizarCadastro()} type="button" class="btn btn btn-success btn-block">Cadastrar</button>
         </div>
+    </div>
+    <div class="map">
+        <lottie-player src="/area-map.json"  background="transparent" speed="1"  style="width: 800px; height: 800px;" loop autoplay></lottie-player>
     </div>
 </div>
 
@@ -138,19 +223,21 @@
         background: #193549;
         display: flex;
         flex-direction: row;
-        justify-content: center;
         align-items: center;
+        justify-content: space-between;
     }
     .box {
         padding: 20px;
-        width: 500px;
+        width: 600px;
         background: #2f384a;
-        border-radius: 5px;
-        border: 1px solid rgb(163, 163, 163);
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        border-radius: 20px;
+        box-shadow: 0 10px 40px #00000056;
+        margin-left: 300px;
     }
-    .box:hover{
-        box-shadow: 0 0 20px rgba(0,0,0,1);
+    .map{
+        width: 800px;
+        height: 800px;
+        margin-right: 500px;
     }
     h3{
         text-align: center;
@@ -161,5 +248,12 @@
         background: #38639A;
         border: none;
         border-radius: 100px;
+    }
+
+    .msg-retorno{
+        display: flex;
+        flex-direction: row;
+        justify-content:start;
+        align-items: center;
     }
 </style>

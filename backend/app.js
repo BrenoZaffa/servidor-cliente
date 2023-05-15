@@ -5,15 +5,12 @@ import express from 'express';
 import cors from 'cors';
 import {usersModel} from './models/users.js'
 import jwt from 'jsonwebtoken';
-import { blacklist } from './helpers/blacklist.js';
-import { checkToken } from './middleware/middleware.js';
+import { checkToken, blackList } from './middleware/middleware.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 await createDataBase();
-
-let blackList = new blacklist();
 
 // cadastro de usuário
 app.post("/users", async function(req, res){

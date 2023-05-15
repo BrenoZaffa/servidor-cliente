@@ -1,13 +1,13 @@
 export class blacklist {
     constructor() {
-        this.blacklist = [];
+        this.list = [];
     }
 
     add(ip) {
-        this.blacklist.push(ip);
+        this.list.push(ip);
     }
 
     isBlacklisted(ip) {
-        return this.blacklist.includes(ip);
+        return this.list.includes(ip);
     }
 }

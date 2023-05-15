@@ -1,6 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
+    import { deslogarUser } from '../services/user';
 
     let publicacoes = [
         {
@@ -21,8 +22,21 @@
         },
     ];
 
+    const deslogar = async () => {
+        var res = await deslogarUser(user.id);
+        if(res.status == 200) {
+            sessionStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            window.location.href = '/';
+        }
+    }
+
+    let token
+    let user = {}
     onMount(async () => {
-        
+        user = JSON.parse(sessionStorage.getItem('user'));
+        console.log(user);
+        token = sessionStorage.getItem('token');
     });
     
 </script>
@@ -36,8 +50,17 @@
     <div class="container">
         <a class="navbar-brand mx-auto" href="/">SAOITR</a>
         <ul class="navbar-nav ml-auto">
+            {#if token}
+                <li class="nav-item text-white">
+                    <button class="btn text-white nav-link"><i class="bi bi-person-circle"></i> {user.name}</button>
+                </li>
+            {/if}
             <li class="nav-item">
-                <a class="nav-link" href="/logar">Logar / Registrar</a>
+                {#if token}
+                    <button on:click={() => deslogar()} class="btn text-white nav-link"><i class="bi bi-box-arrow-in-right"></i> Logout</button>
+                {:else}
+                    <button on:click={() => {goto("/logar")}} type="button" class="btn text-white nav-link" href="/logar">Logar / Registrar</button>
+                {/if}
             </li>
         </ul>
     </div>
@@ -58,13 +81,16 @@
 </div>
 
 <style>
+    .nav-item{
+        margin: 0 10px;
+    }
     .navbar-brand {
-        font-size: 34px;
+        font-size: 42px;
         color: white;
     }
 
-    .nav-link {
-        color: white;
+    .navbar-nav{
+        font-size: 20px;
     }
 
     li:hover {
