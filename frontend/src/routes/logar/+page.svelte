@@ -20,14 +20,14 @@
     })
 
     const logar = async () => {
-        returnLogin = {}
+        returnLogin = null
+        returnCadastro = null
         let post = {...userLogin}
 
         if(await validaFormLogin())
             return;
         
-        if(post.password)
-            post.password = md5(post.password)
+        post.password = md5(post.password)
         
         returnLogin = await logarUser(post)
         if(returnLogin.status == 200){
@@ -38,8 +38,8 @@
                 id: returnLogin?.data?.id
             }
             sessionStorage.setItem("user", JSON.stringify(userReturn))
-
             sessionStorage.setItem("token", returnLogin?.data?.token)
+
             setTimeout(() => {
                 goto("/")
             }, 2000);
@@ -47,14 +47,14 @@
     }
 
     const realizarCadastro = async () => {
+        returnLogin = null
         returnCadastro = null
         let post = {...userCadastro}
 
         if(await validaFormCadastro())
             return;
         
-        if(post.password)
-            post.password = md5(post.password)
+        post.password = md5(post.password)
         
         returnCadastro = await cadastarUser(post)
         if(returnCadastro.status == 201){
@@ -241,9 +241,12 @@
         display: flex;
         align-items: center;
     }
-    @media only screen and (max-width: 600px) {
+    @media only screen and (max-width: 800px) {
         .map{
             display: none;
+        }
+        .box{
+            margin-right: 10vw;
         }
     }
     h3{

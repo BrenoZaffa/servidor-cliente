@@ -24,7 +24,7 @@
 
     const deslogar = async () => {
         var res = await deslogarUser(user.id);
-        if(res.status == 200) {
+        if(res.status == 200 || res.status == 401) {
             sessionStorage.removeItem('user');
             sessionStorage.removeItem('token');
             window.location.href = '/';

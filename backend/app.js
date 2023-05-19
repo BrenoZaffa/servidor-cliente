@@ -120,6 +120,7 @@ app.post("/logout", checkToken, async function(req, res){
         }
 
         blackList.add(req.headers['authorization'].split(' ')[1]);
+        console.log(blackList)
 
         console.log("User logged out");
         return res.status(200).send({message: "Logout realizado com sucesso!"});
