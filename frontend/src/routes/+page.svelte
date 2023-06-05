@@ -3,24 +3,7 @@
     import { onMount } from 'svelte';
     import { deslogarUser } from '../services/user';
 
-    let publicacoes = [
-        {
-            Descricao: "fbeirbviaebrvieabvvilsvysbvsuyrbvuysbvuse",
-            br: "BR-545",
-        },
-        {
-            Descricao: "sdfsdfsdf",
-            br: "BR-54666",
-        },
-        {
-            Descricao: "ddddddddddd",
-            br: "BR-232",
-        },
-        {
-            Descricao: "fbeirbviaebrvieabvvilsvysbvsuyrbvuysbvuse",
-            br: "BR-11",
-        },
-    ];
+    let publicacoes = [];
 
     const deslogar = async () => {
         var res = await deslogarUser(user.id);
@@ -52,7 +35,7 @@
         <ul class="navbar-nav ml-auto">
             {#if token}
                 <li class="nav-item text-white">
-                    <button class="btn text-white nav-link"><i class="bi bi-person-circle"></i> {user.name}</button>
+                    <button on:click={() => {goto("/user")}} class="btn text-white nav-link"><i class="bi bi-person-circle"></i> {user.name}</button>
                 </li>
             {/if}
             <li class="nav-item">

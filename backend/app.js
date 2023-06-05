@@ -131,6 +131,39 @@ app.post("/logout", checkToken, async function(req, res){
     }
 });
 
+// busca de usuário
+app.get("/users/:id", checkToken, async function(req, res){
+    try {
+        const id = req.params?.id;
+        if(id == null)
+            return res.status(400).send({message: "Id não informado!"});
+
+        if(id != jwt.decode(req.headers['authorization'].split(' ')[1]).id){
+            console.log("Token invalid");
+            return res.status(401).send({message: "Token inválido!"});
+        }
+
+        const user = await usersModel.findUserById(id);
+        if(!user)
+            return res.status(401).send({message: "Usuário não encontrado!"});
+
+        const userReturn = {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        }
+        return res.status(200).send(userReturn);
+        
+    } catch (error) {
+        console.log(error+": Error to get user");
+        return res.status(500).send({message: "Erro ao tentar buscar o usuário no servidor"});
+    }
+});
+
+app.put("/users/:id", checkToken, async function(req, res){
+    
+});
+
 app.listen(process.env.PORT, function(){
     console.log('Server started on port '+process.env.PORT);
 });

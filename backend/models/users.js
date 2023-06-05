@@ -20,5 +20,11 @@ export const usersModel = {
         return await db.get(`
             SELECT * FROM users WHERE email = '${email}'
         `);
-    }
+    },
+
+    findUserById: async (id) => {
+        return await db.get(`
+            SELECT * FROM users WHERE id = '${id}'
+        `);
+    },
 };
