@@ -136,6 +136,7 @@ app.post("/logout", checkToken, async function(req, res){
 app.get("/users/:id", checkToken, async function(req, res){
     try {
         console.log("Get user");
+        console.log(req.params);
         const id = req.params?.id;
         if(id == null)
             return res.status(400).send({message: "Id não informado!"});
@@ -166,6 +167,8 @@ app.get("/users/:id", checkToken, async function(req, res){
 app.put("/users/:id", checkToken, async function(req, res){
     try {
         console.log("Update user");
+        console.log(req.params);
+        console.log(req.body);
         const data = req.body;
         const id = req.params?.id;
         if(id == null)
@@ -214,6 +217,7 @@ app.put("/users/:id", checkToken, async function(req, res){
 app.delete("/users/:id", checkToken, async function(req, res){
     try {
         console.log("Delete user");
+        console.log(req.params);
         const id = req.params?.id;
         if(id == null)
             return res.status(400).send({message: "Id não informado!"});
@@ -244,6 +248,7 @@ app.get("/occurrences", async function(req, res){
 
         const listOccurrences = await occurrenceModel.getAllOCcurrences();
         console.log("Get occurrences");
+        console.log(listOccurrences);
         return res.status(200).send(listOccurrences);
 
     }catch(err){
@@ -264,7 +269,7 @@ app.post("/occurrences", checkToken, async function(req, res){
             dataCorrect = false;
         if(!data.registered_at || isNaN(new Date(data.registered_at).getTime()))
             dataCorrect = false;
-        if(!data.local || (data.local && (data.local.length < 10 || data.local.length > 125)))
+        if(!data.local || (data.local && (data.local.length < 1 || data.local.length > 125)))
             dataCorrect = false;
         if(!data.occurrence_type || (data.occurrence_type && (data.occurrence_type < 1 || data.occurrence_type > 10)))
             dataCorrect = false;

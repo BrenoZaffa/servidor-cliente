@@ -1,7 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
-    import { deslogarUser } from '../services/user';
+    import { deslogarUser, getOccurrences } from '../services/user';
 
     let publicacoes = [];
 
@@ -20,6 +20,8 @@
         user = JSON.parse(sessionStorage.getItem('user'));
         console.log(user);
         token = sessionStorage.getItem('token');
+
+        publicacoes = await getOccurrences();
     });
     
 </script>
@@ -57,8 +59,9 @@
     </div>
     {#each publicacoes as publi}
         <div class="col-12">
-            <p class="badge bg-black">{publi.br}</p>
-            <p>{publi.Descricao}</p>
+            <p class="badge bg-black">{publi.km}</p>
+            <p>{publi.local}</p>
+            <p>{publi.occurrence_type}</p>
         </div>
     {/each}
 </div>
