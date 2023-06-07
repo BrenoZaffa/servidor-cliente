@@ -4,6 +4,18 @@
     import { deslogarUser, getOccurrences } from '../services/user';
 
     let publicacoes = [];
+    let occurenceTypes = {
+        1: "Atropelamento",
+        2: "Deslizamento",
+        3: "Colisão frontal",
+        4: "Capotagem",
+        5: "Saída de pista",
+        6: "Batida em objeto fixo",
+        7: "Veículo avariado",
+        8: "Colisão com motocicletas",
+        9: "Colisão no mesmo sentido ou transversal",
+        10: "Construção",
+    }
 
     const deslogar = async () => {
         var res = await deslogarUser(user.id);
@@ -14,6 +26,12 @@
         }
     }
 
+    const teste = () => {
+        var meuModal = document.getElementById('staticBackdrop');
+        var modal = new bootstrap.Modal(meuModal);
+        modal.show();
+    }
+
     let token
     let user = {}
     onMount(async () => {
@@ -21,13 +39,17 @@
         console.log(user);
         token = sessionStorage.getItem('token');
 
-        publicacoes = await getOccurrences();
+        let response = await getOccurrences();
+        if(response.status == 200) {
+            publicacoes = await response.data;
+            console.log("accurrences",response);
+        }
     });
     
 </script>
 
 <svelte:head>
-    <link rel="shortcut icon" href="/geo-alt.svg" >
+    <link rel="shortcut icon" href="/geo-alt.svg">
     <title>SAOITR - Ocorrências</title> 
 </svelte:head>
 
@@ -52,21 +74,38 @@
 </nav>
 
 <div class="row m-3">
-    <div class="col-12">
-        <h2>
-            <b>Ocorrências</b>
-        </h2>
+    <div class="col-12 mb-3" style="display: flex; place-content: space-between;">
+        <h2><b>Ocorrências</b></h2>
+        <button type="button" on:click={() => goto("/occurrence")} class="btn btn-success"><i class="bi bi-plus-lg"></i> Cadastrar Ocorrência</button>
     </div>
-    {#each publicacoes as publi}
-        <div class="col-12">
-            <p class="badge bg-black">{publi.km}</p>
-            <p>{publi.local}</p>
-            <p>{publi.occurrence_type}</p>
-        </div>
-    {/each}
+    <div class="col-12">
+        <table class="table table-bordered table-striped" width="100%" style="box-shadow: 0 10px 40px #00000056;">
+            <thead>
+                <tr>
+                    <th class="text-center">Data</th>
+                    <th class="text-center">KM</th>
+                    <th class="text-center">Tipo</th>
+                    <th class="text-center">Local</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#each publicacoes as publi}
+                    <tr>
+                        <td class="text-center">{publi.registered_at}</td>
+                        <td class="text-center">{publi.km}</td>
+                        <td class="text-center">{occurenceTypes?.[publi.occurrence_type]}</td>
+                        <td class="text-center">{publi.local}</td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <style>
+    th{
+        font-size: 20px;
+    }
     .nav-item{
         margin: 0 10px;
     }

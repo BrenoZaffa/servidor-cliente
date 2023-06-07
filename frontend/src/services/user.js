@@ -46,7 +46,7 @@ export const deslogarUser = async (userId) => {
 export const getOccurrences = async () => {
     try {
         let res = await axios.get(host+'/occurrences')
-        return res.data
+        return res
     } catch (error) {
         console.log("get occurrences: "+ error);
         return error.response
@@ -60,6 +60,17 @@ export const getUser = async (id) => {
         return res
     } catch (error) {
         console.log("get user: "+ error);
+        return error.response
+    }
+};
+
+export const insertOcorrencia = async (ocorrencia) => {
+    try {
+        const token = sessionStorage.getItem('token')
+        let res = await axios.post(host+'/occurrences', ocorrencia, { headers: { Authorization: `Bearer ${token}` } })
+        return res
+    } catch (error) {
+        console.log("inserir ocorrencia: "+ error);
         return error.response
     }
 };

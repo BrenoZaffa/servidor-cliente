@@ -144,4 +144,11 @@
         justify-content:start;
         align-items: center;
     }
+
+    .error-input {
+        color: #ffda6a;
+        background-color: #332701;
+        border-radius: 5px;
+        border: #997404 2px solid;
+    }
 </style>
