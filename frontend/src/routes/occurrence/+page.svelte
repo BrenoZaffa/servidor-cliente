@@ -93,7 +93,7 @@
             <div class="col-12 mt-3">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control form-control-sm" id="nome-input" placeholder="Nome" bind:value={ocorrencia.local}>
-                    <label for="nome-input">Nome</label>
+                    <label for="nome-input">Local</label>
                     {#if erroCadastro}
                         {#if !ocorrencia.local}<p class="error-input mt-1 p-1">Local é obrigatório!</p>{/if}
                         {#if ocorrencia.local && (ocorrencia.local.length < 1 || ocorrencia.local.length > 125)}<p class="error-input mt-1 p-1">Nome deve ter entre 1 e 125 caracteres!</p>{/if}
