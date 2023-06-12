@@ -3,6 +3,12 @@
     import { onMount } from 'svelte';
     import { insertOcorrencia } from '../../services/user';
     import { scale } from 'svelte/transition';
+    // import utc from 'dayjs/plugin/utc';
+    // import timezone from 'dayjs/plugin/timezone';
+    // import dayjs from 'dayjs';
+
+    // dayjs.extend(utc);
+    // dayjs.extend(timezone);
 
     let ocorrencia = {}, returnCadastro
     let erroCadastro = false
@@ -33,6 +39,11 @@
             return;
 
         post.user_id = user.id
+
+        // UTC pt-br
+        var d1 = new Date(ocorrencia.registered_at);
+        let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
+        post.registered_at = d2.toISOString();
 
         returnCadastro = await insertOcorrencia(post)
         if(returnCadastro.status == 201){

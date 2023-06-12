@@ -37,12 +37,15 @@
             userCadastro = {}
             sessionStorage.removeItem('user')
             sessionStorage.setItem('user', JSON.stringify(returnCadastro.data))
+            user = JSON.parse(sessionStorage.getItem('user'));
+
+            userCadastro.name = user.name
+            userCadastro.email = user.email
         }
     }
 
     let token
     let user = {}
-    let userApi = {}
     onMount(async () => {
         user = JSON.parse(sessionStorage.getItem('user'));
         console.log(user);
@@ -51,7 +54,13 @@
         if(!token)
             goto('/logar')
 
-        userApi = await getUser(user.id)
+        let res = await getUser(user.id)
+        console.log(res);
+        if(res.status == 200){
+            userCadastro.email = res.data?.email
+            userCadastro.name = res.data?.name
+        }
+
     });
 </script>
 

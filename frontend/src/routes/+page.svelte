@@ -76,7 +76,9 @@
 <div class="row m-3">
     <div class="col-12 mb-3" style="display: flex; place-content: space-between;">
         <h2><b>Ocorrências</b></h2>
-        <button type="button" on:click={() => goto("/occurrence")} class="btn btn-success"><i class="bi bi-plus-lg"></i> Cadastrar Ocorrência</button>
+        {#if token}
+            <button type="button" on:click={() => goto("/occurrence")} class="btn btn-success"><i class="bi bi-plus-lg"></i> Cadastrar Ocorrência</button>
+        {/if}
     </div>
     <div class="col-12">
         <table class="table table-bordered table-striped" width="100%" style="box-shadow: 0 10px 40px #00000056;">

@@ -194,7 +194,8 @@ app.put("/users/:id", checkToken, async function(req, res){
 
         if(data.email && data.email != null){
             var existeEmail = await usersModel.findUserByEmail(data.email);
-            if(existeEmail){
+            var emailId = await usersModel.findUserById(id);
+            if(existeEmail && emailId.email != data.email){
                 console.log("Email já cadastrado");
                 return res.status(422).send({message: "Email já cadastrado no sistema!"});
             }
