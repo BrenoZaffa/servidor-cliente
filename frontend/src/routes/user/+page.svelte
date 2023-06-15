@@ -31,6 +31,8 @@
 
         if(post.password)
             post.password = md5(post.password)
+        else
+            post.password = null
 
         returnCadastro = await atualizarUser(user.id, post)
         if(returnCadastro.status == 200){

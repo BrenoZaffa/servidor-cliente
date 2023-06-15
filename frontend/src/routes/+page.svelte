@@ -93,7 +93,7 @@
             <tbody>
                 {#each publicacoes as publi}
                     <tr>
-                        <td class="text-center">{publi.registered_at}</td>
+                        <td class="text-center">{new Date(publi.registered_at).toLocaleString("pt-BR",{timeZone:"UTC"})}</td>
                         <td class="text-center">{publi.km}</td>
                         <td class="text-center">{occurenceTypes?.[publi.occurrence_type]}</td>
                         <td class="text-center">{publi.local}</td>
