@@ -25,7 +25,7 @@ export const occurrenceModel = {
             id: id.id,
             registered_at,
             local,
-            occurrence_type,
+            occurrence_type: parseInt(occurrence_type),
             km,
             user_id
         }

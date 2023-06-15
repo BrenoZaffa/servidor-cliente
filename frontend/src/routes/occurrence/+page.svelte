@@ -65,6 +65,8 @@
         let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
         post.registered_at = d2.toISOString();
 
+        post.occurrence_type = parseInt(post.occurrence_type)
+
         returnCadastro = await insertOcorrencia(post)
         if(returnCadastro.status == 201){
             setTimeout(() => {

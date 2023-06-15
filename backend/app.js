@@ -303,6 +303,7 @@ app.post("/occurrences", checkToken, async function(req, res){
         const saveOccurrence = await occurrenceModel.insertOccurrence(data);
 
         console.log("Occurrence inserted");
+        console.log(saveOccurrence);
         return res.status(201).send(saveOccurrence);
         
     } catch (error) {
