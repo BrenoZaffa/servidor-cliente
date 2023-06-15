@@ -28,11 +28,31 @@
         if(!ocorrencia.registered_at)
             erroCadastro = true;
 
+        if(ocorrencia.registered_at){
+            var d1 = new Date(ocorrencia.registered_at);
+            let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
+            let date = d2.toISOString();
+
+            d1 = new Date();
+            d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
+            let current_date = d2.toISOString();
+
+            if(date > current_date){
+                erroCadastro = true;
+                returnCadastro = {
+                    status: 400,
+                    data: {
+                        message: "Data não pode ser maior que a data atual!"
+                    }
+                }
+            }
+        }
+
         return erroCadastro;
     }
 
     const inserirOcorrencia = async () => {
-        
+        returnCadastro = null
         let post = {...ocorrencia}
 
         if(await validaForm())

@@ -265,10 +265,15 @@ app.post("/occurrences", checkToken, async function(req, res){
         console.log("Insert occurrence");
         console.log(req.body);
         const data = req.body;
+
+        var d1 = new Date();
+        let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
+        let date = d2.toISOString();
+        
         let dataCorrect = true;
         if(!data)
             dataCorrect = false;
-        if(!data.registered_at || isNaN(new Date(data.registered_at).getTime()))
+        if(!data.registered_at || isNaN(new Date(data.registered_at).getTime()) || (new Date(data.registered_at).getTime() > new Date(date).getTime()))
             dataCorrect = false;
         if(!data.local || (data.local && (data.local.length < 1 || data.local.length > 125)))
             dataCorrect = false;
