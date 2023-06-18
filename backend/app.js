@@ -233,6 +233,7 @@ app.delete("/users/:id", checkToken, async function(req, res){
             return res.status(401).send({message: "Usuário não encontrado!"});
 
         await usersModel.deleteUser(id);
+        await occurrenceModel.deleteOccurrencesByUserId(id);
 
         console.log("User deleted");
         return res.status(200).send();
@@ -269,6 +270,13 @@ app.post("/occurrences", checkToken, async function(req, res){
         var d1 = new Date();
         let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
         let date = d2.toISOString();
+
+        if(data.registered_at && !isNaN(new Date(data.registered_at).getTime())){
+            if(data.registered_at[data.registered_at.length-1] == "Z")
+                data.registered_at = new Date(data.registered_at).toISOString();
+            else
+                data.registered_at = new Date(data.registered_at+"Z").toISOString();
+        }
         
         let dataCorrect = true;
         if(!data)
@@ -309,6 +317,132 @@ app.post("/occurrences", checkToken, async function(req, res){
     } catch (error) {
         console.log(error+": Error to insert occurrence");
         return res.status(500).send({message: "Erro ao tentar cadastrar a ocorrência no servidor"});
+    }
+});
+
+// atualiza ocorrência
+app.put("/occurrences/:id", checkToken, async function(req, res){
+    try {
+        console.log("Update occurrence");
+        console.log(req.params);
+        console.log(req.body);
+        const data = req.body;
+        const id = req.params?.id;
+        if(id == null)
+            return res.status(400).send({message: "Id não informado!"});
+
+        var d1 = new Date();
+        let d2 = new Date(d1.valueOf() - d1.getTimezoneOffset() * 60000);
+        let date = d2.toISOString();
+        
+        if(data.registered_at && !isNaN(new Date(data.registered_at).getTime())){
+            if(data.registered_at[data.registered_at.length-1] == "Z")
+                data.registered_at = new Date(data.registered_at).toISOString();
+            else
+                data.registered_at = new Date(data.registered_at+"Z").toISOString();
+        }
+
+        let dataCorrect = true;
+        if(!data)
+            dataCorrect = false;
+        if(!data.registered_at || isNaN(new Date(data.registered_at).getTime()) || (new Date(data.registered_at).getTime() > new Date(date).getTime()))
+            dataCorrect = false;
+        if(!data.local || (data.local && (data.local.length < 1 || data.local.length > 125)))
+            dataCorrect = false;
+        if(!data.occurrence_type || (data.occurrence_type && (data.occurrence_type < 1 || data.occurrence_type > 10)))
+            dataCorrect = false;
+        if(!data.km || (data.km && (data.km < 1 || data.km > 9999)))
+            dataCorrect = false;
+        if(!data.user_id)
+            dataCorrect = false;
+
+        if(!dataCorrect){
+            console.log("Data incorrect");
+            return res.status(400).send({message: "Requisição fora do protocolo!"});
+        }
+
+        if(data.user_id != jwt.decode(req.headers['authorization'].split(' ')[1]).id){
+            console.log("Token invalid");
+            return res.status(401).send({message: "Token inválido!"});
+        }
+
+        const occurrence = await occurrenceModel.findOccurrenceById(id);
+        if(!occurrence){
+            console.log("Occurrence not found");
+            return res.status(400).send({message: "Ocorrência não encontrada!"});
+        }
+
+        if(occurrence.user_id != data.user_id || usersModel.findUserById(data.user_id) == null){
+            console.log("User invalid");
+            return res.status(401).send({message: "Usuário inválido!"});
+        }
+
+        const occurrenceAtt = await occurrenceModel.updateOccurrence(id, data);
+
+        console.log("Occurrence updated");
+        console.log(occurrenceAtt);
+        return res.status(200).send(occurrenceAtt);
+
+    } catch (error) {
+        console.log(error+": Error to update occurrence");
+        return res.status(500).send({message: "Erro ao tentar atualizar a ocorrência no servidor"});
+    }
+});
+
+//ocorrencia por usuário
+app.get("/occurrences/users/:id", checkToken, async function(req, res){
+    try {
+        console.log("Get occurrences by user");
+        console.log(req.params);
+        const id = req.params?.id;
+        if(id == null)
+            return res.status(400).send({message: "Id não informado!"});
+
+        if(id != jwt.decode(req.headers['authorization'].split(' ')[1]).id){
+            console.log("Token invalid");
+            return res.status(401).send({message: "Token inválido!"});
+        }
+
+        const occurrences = await occurrenceModel.findOccurrencesByUserId(id);
+
+        console.log("Occurrences by user");
+        console.log(occurrences);
+        return res.status(200).send(occurrences);
+    
+    } catch (error) {
+        console.log(error+": Error to get occurrences by user");
+        return res.status(500).send({message: "Erro ao tentar buscar as ocorrências do usuário no servidor"});
+    }
+});
+
+// deleta ocorrência
+app.delete("/occurrences/:id", checkToken, async function(req, res){
+    try {
+        console.log("Delete occurrence");
+        console.log(req.params);
+        const id = req.params?.id;
+        if(id == null)
+            return res.status(400).send({message: "Id não informado!"});
+
+        let saveOccurrence = await occurrenceModel.findOccurrenceById(id);
+        if(!saveOccurrence){
+            console.log("Occurrence not found");
+            return res.status(400).send({message: "Ocorrência não encontrada!"});
+        }
+
+        if(saveOccurrence.user_id != jwt.decode(req.headers['authorization'].split(' ')[1]).id){
+            console.log("Token invalid");
+            return res.status(401).send({message: "Token inválido!"});
+        }
+
+        await occurrenceModel.deleteOccurrence(id);
+
+        console.log("Occurrence deleted");
+        return res.status(200).send();
+
+    } catch (error) {
+        console.log(error+": Error to delete occurrence");
+        return res.status(500).send({message: "Erro ao tentar deletar a ocorrência no servidor"});
     }
 });
 
