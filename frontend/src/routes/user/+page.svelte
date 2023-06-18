@@ -1,7 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
-    import { atualizarUser, getUser } from '../../services/user';
+    import { atualizarUser, getUser, deleteUser } from '../../services/user';
     import { scale } from 'svelte/transition';
     import md5 from 'md5';
 
@@ -46,6 +46,15 @@
         }
     }
 
+    const delConta = async () => {
+        let res = await deleteUser(user.id)
+        if(res.status == 200){
+            sessionStorage.removeItem('user')
+            sessionStorage.removeItem('token')
+            goto('/logar')
+        }
+    }
+
     let token
     let user = {}
     onMount(async () => {
@@ -74,8 +83,9 @@
 <div class="cont">
     <div class="box">
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 d-flex" style="justify-content: space-between;">
                 <h3 class="text-white"><b>Atualizar dados usuário</b></h3>
+                <button on:click={() => delConta()} type="button" class="btn btn-outline-danger"><i class="bi bi-trash"></i> Apagar Conta</button>
             </div>
 
             {#if returnCadastro?.status}

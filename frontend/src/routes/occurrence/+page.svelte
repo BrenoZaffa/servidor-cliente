@@ -1,7 +1,7 @@
 <script>
     import { goto } from '$app/navigation';
     import { onMount } from 'svelte';
-    import { insertOcorrencia } from '../../services/user';
+    import { insertOcorrencia, updateOcorrencia } from '../../services/user';
     import { scale } from 'svelte/transition';
     // import utc from 'dayjs/plugin/utc';
     // import timezone from 'dayjs/plugin/timezone';
@@ -51,7 +51,7 @@
         return erroCadastro;
     }
 
-    const inserirOcorrencia = async () => {
+    const setData = async () => {
         returnCadastro = null
         let post = {...ocorrencia}
 
@@ -67,8 +67,12 @@
 
         post.occurrence_type = parseInt(post.occurrence_type)
 
-        returnCadastro = await insertOcorrencia(post)
-        if(returnCadastro.status == 201){
+        if(ocorrencia.id)
+            returnCadastro = await updateOcorrencia(post, ocorrencia.id)
+        else
+            returnCadastro = await insertOcorrencia(post)
+        if(returnCadastro.status == 201 || returnCadastro.status == 200){
+            sessionStorage.removeItem('occurrence');
             setTimeout(() => {
                 goto('/')
             }, 1000);
@@ -79,11 +83,20 @@
     let user = {}
     onMount(async () => {
         user = JSON.parse(sessionStorage.getItem('user'));
-        console.log(user);
         token = sessionStorage.getItem('token');
 
         if(!token)
             goto('/logar')
+
+        if(sessionStorage.getItem('occurrence')){
+            ocorrencia = JSON.parse(sessionStorage.getItem('occurrence'));
+            ocorrencia.registered_at = ocorrencia.registered_at.replace('.000Z', '');
+            ocorrencia.occurrence_type = ocorrencia.occurrence_type.toString();
+            console.log(ocorrencia);
+
+            if(ocorrencia.user_id != user.id)
+                goto('/')
+        }
 
     });
 </script>
@@ -102,14 +115,14 @@
 
             {#if returnCadastro?.status}
                 <div class="col-12 mt-3">
-                    <div in:scale={{duration: 500}} class="alert p-0 {returnCadastro.status == 201 ? "alert-success" : "alert-danger"}" role="alert">
+                    <div in:scale={{duration: 500}} class="alert p-0 {returnCadastro.status == 201 || returnCadastro.status == 200 ? "alert-success" : "alert-danger"}" role="alert">
                         <b class="msg-retorno">
-                            {#if returnCadastro.status == 201}
+                            {#if returnCadastro.status == 201 || returnCadastro.status == 200}
                                 <lottie-player src="/like.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
                             {:else}
                                 <lottie-player src="/warning.json"  background="transparent" speed="1"  style="width: 50px; height: 50px;" loop autoplay></lottie-player>
                             {/if}
-                            {returnCadastro?.data?.message ?? "Atualização do usuário realizada com sucesso!"}
+                            {returnCadastro?.data?.message ?? "Dados Inseridos/Atualizados com sucesso!"}
                         </b>
                     </div>
                 </div>
@@ -166,7 +179,7 @@
                 </div>
             </div>
             <div class="col-12 mt-3 d-grid">
-                <button on:click={() => inserirOcorrencia()} type="button" class="btn btn btn-success btn-block">Salvar</button>
+                <button on:click={() => setData()} type="button" class="btn btn btn-success btn-block">Salvar</button>
             </div>
         </div>
     </div>
