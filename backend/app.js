@@ -235,6 +235,8 @@ app.delete("/users/:id", checkToken, async function(req, res){
         await usersModel.deleteUser(id);
         await occurrenceModel.deleteOccurrencesByUserId(id);
 
+        blackList.add(req.headers['authorization'].split(' ')[1]);
+
         console.log("User deleted");
         return res.status(200).send();
 
