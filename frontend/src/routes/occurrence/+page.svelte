@@ -67,9 +67,10 @@
 
         post.occurrence_type = parseInt(post.occurrence_type)
 
-        if(ocorrencia.id)
+        if(ocorrencia.id){
+            delete ocorrencia.id
             returnCadastro = await updateOcorrencia(post, ocorrencia.id)
-        else
+        }else
             returnCadastro = await insertOcorrencia(post)
         if(returnCadastro.status == 201 || returnCadastro.status == 200){
             sessionStorage.removeItem('occurrence');
@@ -129,7 +130,7 @@
             {/if}
             <div class="col-12 mt-3">
                 <div class="form-floating mb-3">
-                    <input type="datetime-local" step="2" class="form-control form-control-sm" id="data-input" placeholder="Data" bind:value={ocorrencia.registered_at}>
+                    <input type="datetime-local" step="1" class="form-control form-control-sm" id="data-input" placeholder="Data" bind:value={ocorrencia.registered_at}>
                     <label for="data-input">Data</label>
                     {#if erroCadastro}
                         {#if !ocorrencia.registered_at}<p class="error-input mt-1 p-1">Data é obrigatório!</p>{/if}
